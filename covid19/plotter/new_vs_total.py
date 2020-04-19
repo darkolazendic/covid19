@@ -9,7 +9,6 @@ import os
 
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
-period = int(input('Averaging period (in days): '))
 
 
 def get_averages(data, averaging_period):
@@ -30,23 +29,25 @@ def get_averages(data, averaging_period):
 
 # script execution
 countries = input('Enter country 3-letter codes separated by ", ": ').split(', ')
+data_type = input('Cases or deaths? ')
+period = int(input('Averaging period (in days): '))
 
 
 for index in range(len(countries)):
-    total_storage_file = os.path.join(CURRENT_DIRECTORY, '../../data/total_cases/'+countries[index]+'.csv')
+    total_storage_file = os.path.join(CURRENT_DIRECTORY, '../../data/total_'+data_type+'/'+countries[index]+'.csv')
     total_dataframe = pd.read_csv(total_storage_file)
-    x = list(total_dataframe['total_cases'])[period:]
+    x = list(total_dataframe['total_'+data_type])[period:]
 
-    daily_storage_file = os.path.join(CURRENT_DIRECTORY, '../../data/daily_cases/'+countries[index]+'.csv')
+    daily_storage_file = os.path.join(CURRENT_DIRECTORY, '../../data/daily_'+data_type+'/'+countries[index]+'.csv')
     daily_dataframe = pd.read_csv(daily_storage_file)
-    y = get_averages(list(daily_dataframe['daily_cases']), period)
+    y = get_averages(list(daily_dataframe['daily_'+data_type]), period)
 
     plot = plt.loglog(x, y, label=countries[index], linewidth=2)
 
-plt.xlabel('Total cases')
+plt.xlabel('Total '+data_type)
 
-plt.ylabel('New cases')
-plt.title('New cases averaged over past '+str(period)+' days vs total cases')
+plt.ylabel('New ' + data_type)
+plt.title('New '+data_type+' averaged over past '+str(period)+' days vs total '+data_type)
 plt.legend()
 
 plt.show()
