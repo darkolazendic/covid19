@@ -34,26 +34,26 @@ def write_to_csv(country_code, country_data, data_type):
             writer.writerow({'date': daily_data[0], data_type: daily_data[1]})
 
 
-def calculate_daily_cases(country_data):
+def calculate_daily(country_data):
     """
-    Calculates daily new cases data from total confirmed cases data.
+    Calculates daily new cases/deaths data from total confirmed cases/deaths data.
     :param country_data:
     :return:
     """
 
     dates = []
-    total_cases = []
-    daily_cases = []
+    total = []
+    daily = []
 
     for country_datum in country_data:
         dates.append(country_datum[0])
-        total_cases.append(country_datum[1])
+        total.append(country_datum[1])
 
     for index in range(len(dates)):
-        previous_cases = total_cases[index-1] if index > 0 else 0
-        daily_cases.append([dates[index], total_cases[index] - previous_cases])
+        previous = total[index-1] if index > 0 else 0
+        daily.append([dates[index], total[index] - previous])
 
-    return daily_cases
+    return daily
 
 
 # script execution
@@ -64,10 +64,12 @@ except ValueError:
 else:
     print(len(response))
     for data in response:
-        # storing total cases data
+        # storing total cases and deaths data
         write_to_csv(data['country_code'], data['confirmed'], 'total_cases')
+        write_to_csv(data['country_code'], data['deaths'], 'total_deaths')
 
-        # calculating and storing daily new cases data
-        write_to_csv(data['country_code'], calculate_daily_cases(data['confirmed']), 'daily_cases')
+        # calculating and storing daily new cases and deaths data
+        write_to_csv(data['country_code'], calculate_daily(data['confirmed']), 'daily_cases')
+        write_to_csv(data['country_code'], calculate_daily(data['deaths']), 'daily_deaths')
 
-    print('\nTotal cases pulled and daily new cases calculated successfully.\n')
+    print('\nTotal cases and deaths pulled and daily new cases and deaths calculated successfully.\n')
